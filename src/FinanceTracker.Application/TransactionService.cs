@@ -10,7 +10,9 @@ public class TransactionService
     {
         if (transaction.Amount <= 0)
         {
-            throw new ArgumentException("Transaction amount must be greater than zero");
+            throw new ArgumentException(
+                $"Transaction amount must be greater than zero: {transaction.Amount}"
+            );
         }
 
         _transactions.Add(transaction);
