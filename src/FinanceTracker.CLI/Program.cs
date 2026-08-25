@@ -10,7 +10,7 @@ var running = true;
 
 // Set up example transaction service
 service.AddTransaction(new Transaction((decimal) 2.50, TransactionType.Expense, "Groceries", ""));
-service.AddTransaction(new Transaction(22, TransactionType.Income, "Comission", ""));
+service.AddTransaction(new Transaction(22.0, TransactionType.Income, "Comission", ""));
 
 while (running)
 {

@@ -23,6 +23,8 @@ public class Transaction
         set => _description = ClipText(value, 30);
     }
 
+    public Transaction() {}
+
     public Transaction(decimal amount, TransactionType type, string category, string description)
     {
         Amount = amount;
@@ -30,6 +32,10 @@ public class Transaction
         Description = description;
         Type = type;
     }
+
+    public Transaction(double amount, TransactionType type, string category, string description)
+        : this((decimal)amount, type, category, description)
+    {}
 
     // Make into helper?
     // Return text up to and including character at limit index
@@ -43,4 +49,24 @@ public class Transaction
     {
         return $"Transaction{{amount:{_amount}, type:{Type}, category:{_category}, description:{_description}}}";
     }
+
+    public override bool Equals(object? obj)
+    {
+        if ((obj == null) || !this.GetType().Equals(obj.GetType()))
+        {
+            return false;
+        } else
+        {
+            if (this == obj) return true;
+            Transaction t = (Transaction) obj;
+            return Amount == t.Amount
+                && Type == t.Type
+                && Category == t.Category
+                && Description == t.Description;
+        }
+    }
+
+    public override int GetHashCode() =>
+        HashCode.Combine(Amount, Type, Category, Description);
+
 }
