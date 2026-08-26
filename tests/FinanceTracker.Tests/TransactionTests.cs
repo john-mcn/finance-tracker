@@ -3,6 +3,31 @@ using FinanceTracker.Domain;
 
 namespace TransactionTests;
 
+public class TransactionTypeMethodsTests
+{
+    [Fact]
+    public void FromString_InputValidString_ReturnsValidEnum()
+    {
+        TransactionType typeIncome = TransactionTypeMethods.FromString("income");
+        Assert.Equal(TransactionType.Income, typeIncome);
+    }
+
+    [Fact]
+    public void FromString_HandlesCaseAndSpaces()
+    {
+        var strExport = "    exPEnSe  ";
+        Assert.Equal(TransactionType.Expense, TransactionTypeMethods.FromString(strExport));
+        Assert.Equal(TransactionType.Expense, TransactionTypeMethods.FromString(strExport.ToUpper()));
+        Assert.Equal(TransactionType.Expense, TransactionTypeMethods.FromString(strExport.ToLower()));
+    }
+
+    [Fact]
+    public void FromString_InputInvalidString_ThrowsError()
+    {
+        Assert.Throws<ArgumentException>(() => TransactionTypeMethods.FromString("kitten"));
+    }
+}
+
 public class TransactionGetterSetterTests
 {
     [Fact]

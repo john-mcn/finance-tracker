@@ -1,5 +1,6 @@
 namespace FinanceTracker.Domain;
 
+// Transaction 'amount' can only be positive - income/expense stored in 'type'
 public class Transaction
 {
     private decimal _amount;
@@ -42,7 +43,7 @@ public class Transaction
     static string ClipText(string inpt, int charLimit) {
         if (inpt.Length > charLimit)
             Console.WriteLine("WARNING - Input text exceeds given character limit, text has been clipped.");
-        return inpt[..(Math.Min(charLimit, inpt.Length))];
+        return inpt[..Math.Min(charLimit, inpt.Length)];
     }
 
     public override string ToString()
