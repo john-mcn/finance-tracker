@@ -58,7 +58,7 @@ public class TransactionGetterSetterTests
 public class TransactionConstructorTests
 {
     [Fact]
-    public void CreateTransaction_ValidInputs_Set0()
+    public void CreateTransaction_ValidInputs_SetsCorrectly()
     {
         Transaction expected = new Transaction();
         expected.Amount = (decimal) 2.50;

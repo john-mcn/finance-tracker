@@ -7,8 +7,14 @@ public class TransactionService
     private readonly List<Transaction> _transactions = [];
 
     public void AddTransaction(Transaction transaction) { _transactions.Add(transaction); }
+    
+    public void AddAllTransactions(IEnumerable<Transaction> transactions)
+    {
+        _transactions.AddRange(transactions);    
+    }
 
-    public IReadOnlyList<Transaction> GetTransactions() { return _transactions; }
+    // ToList to create snapshot instead of reference to same list
+    public IReadOnlyList<Transaction> GetTransactions() { return _transactions.ToList(); }
 
     public IReadOnlyList<Transaction> GetAllIncomes()
     {
