@@ -30,16 +30,26 @@ while (running)
             Console.WriteLine(string.Join(", ", service.GetTransactions()));
             break;
         case "2":
-            Console.WriteLine("=== New Transaction ===");
-            Console.Write("Amount (e.g. '2.35'): ");
-            decimal amount = Convert.ToDecimal(Console.ReadLine());
-            Console.Write("Type (e.g. 'income' or 'expense'): ");
-            TransactionType type = TransactionTypeMethods.FromString(Console.ReadLine() ?? "");
-            Console.Write("Category: ");
-            string category = Console.ReadLine() ?? "";
-            Console.Write("Description: ");
-            string description = Console.ReadLine() ?? "";
-            service.AddTransaction(new Transaction(amount, type, category, description));
+            var runningBuildTransaction = true;
+            while (runningBuildTransaction)
+            {
+                try
+                {
+                    Transaction transaction = CLIMethods.BuildTransaction();
+                    service.AddTransaction(transaction);
+                } catch (Exception e)
+                {
+                    // Console.WriteLine("[ERROR] " + e.Message);
+                    CLIMethods.PrintError($"[ERROR] {e.Message}\n");
+                    Console.Write("Enter any character to try again, or 'exit' to return to main menu ");
+                    var response = Console.ReadLine() ?? "exit";
+                    if (response.Equals("exit") || response.Equals(""))
+                    {
+                        runningBuildTransaction = false;
+                        break;
+                    }
+                }
+            }
             break;
         case "3":
             Console.WriteLine($"Balance: £{service.GetBalance():F2}");
@@ -51,5 +61,29 @@ while (running)
         default:
             Console.WriteLine($"Invalid option \"{choice}\"");
             break;
+    }
+}
+
+static class CLIMethods
+{
+    public static void PrintError(string str)
+    {
+        Console.ForegroundColor = ConsoleColor.Red;
+        Console.Write(str);
+        Console.ResetColor();
+    }
+
+    public static Transaction BuildTransaction()
+    {
+        Console.WriteLine("=== New Transaction ===");
+        Console.Write("Amount (e.g. '2.35'): ");
+        decimal amount = Convert.ToDecimal(Console.ReadLine());
+        Console.Write("Type (e.g. 'income' or 'expense'): ");
+        TransactionType type = TransactionTypeMethods.FromString(Console.ReadLine() ?? "");
+        Console.Write("Category: ");
+        string category = Console.ReadLine() ?? "";
+        Console.Write("Description: ");
+        string description = Console.ReadLine() ?? "";
+        return new Transaction(amount, type, category, description);
     }
 }

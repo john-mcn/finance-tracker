@@ -3,11 +3,17 @@ namespace FinanceTracker.Domain;
 // Transaction 'amount' can only be positive - income/expense stored in 'type'
 public class Transaction
 {
+    public const int CATEGORY_CHAR_LIMIT = 10;
+    public const int DESCRIPTION_CHAR_LIMIT = 30;
+
     private decimal _amount;
     public decimal Amount
     {
         get => _amount;
-        set => _amount = Math.Max(0, value);
+        set {
+            if (value <= 0) { throw new ArgumentException($"Amount must not be less than 0: {value}"); }
+            else { _amount = value; }
+        }
     }
 
     public TransactionType Type { get; set; }
@@ -15,13 +21,25 @@ public class Transaction
     private string _category = string.Empty;
     public string Category {
         get => _category;
-        set => _category = ClipText(value, 10);
+        set {
+            if (value.Length > CATEGORY_CHAR_LIMIT)
+            {
+                throw new ArgumentException($"Category length must not exceed {CATEGORY_CHAR_LIMIT}");
+            }
+            else { _category = value; }
+        }
     }
 
     private string _description = string.Empty;
     public string Description {
         get => _description;
-        set => _description = ClipText(value, 30);
+        set {
+            if (value.Length > DESCRIPTION_CHAR_LIMIT)
+            {
+                throw new ArgumentException($"Description length must not exceed {DESCRIPTION_CHAR_LIMIT}");
+            }
+            else { _description = value; }
+        }
     }
 
     public Transaction() {}
@@ -41,8 +59,6 @@ public class Transaction
     // Make into helper?
     // Return text up to and including character at limit index
     static string ClipText(string inpt, int charLimit) {
-        if (inpt.Length > charLimit)
-            Console.WriteLine("WARNING - Input text exceeds given character limit, text has been clipped.");
         return inpt[..Math.Min(charLimit, inpt.Length)];
     }
 

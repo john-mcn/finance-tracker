@@ -6,17 +6,7 @@ public class TransactionService
 {
     private readonly List<Transaction> _transactions = [];
 
-    public void AddTransaction(Transaction transaction)
-    {
-        if (transaction.Amount <= 0)
-        {
-            throw new ArgumentException(
-                $"Transaction amount must be greater than zero: {transaction.Amount}"
-            );
-        }
-
-        _transactions.Add(transaction);
-    }
+    public void AddTransaction(Transaction transaction) { _transactions.Add(transaction); }
 
     public IReadOnlyList<Transaction> GetTransactions() { return _transactions; }
 
