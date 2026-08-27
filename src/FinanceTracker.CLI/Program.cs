@@ -39,7 +39,6 @@ while (running)
                     service.AddTransaction(transaction);
                 } catch (Exception e)
                 {
-                    // Console.WriteLine("[ERROR] " + e.Message);
                     CLIMethods.PrintError($"[ERROR] {e.Message}\n");
                     Console.Write("Enter any character to try again, or 'exit' to return to main menu ");
                     var response = Console.ReadLine() ?? "exit";
