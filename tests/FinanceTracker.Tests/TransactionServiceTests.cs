@@ -17,7 +17,7 @@ public class TransactionServiceSetupTests
         // Assert size is increased by 1 and new list contains new transaction
         Assert.Empty(listBefore);
         Assert.Single(listAfter);
-        Assert.Contains(transaction, listAfter);
+        Assert.Equal(transaction, listAfter[0]);
     }
 
     [Fact]

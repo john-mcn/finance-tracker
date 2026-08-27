@@ -14,7 +14,10 @@ public class TransactionService
     }
 
     // ToList to create snapshot instead of reference to same list
-    public IReadOnlyList<Transaction> GetTransactions() { return _transactions.ToList(); }
+    public IReadOnlyList<Transaction> GetTransactions()
+    {
+        return _transactions.ToList().AsReadOnly();
+    }
 
     public IReadOnlyList<Transaction> GetAllIncomes()
     {
@@ -31,8 +34,6 @@ public class TransactionService
     }
 
     public decimal GetTotalIncome() { return GetAllIncomes().Sum(t => t.Amount); }
-
     public decimal GetTotalExpenses() { return GetAllExpenses().Sum(t => t.Amount); }
-
     public decimal GetBalance() { return GetTotalIncome() - GetTotalExpenses(); }
 }
