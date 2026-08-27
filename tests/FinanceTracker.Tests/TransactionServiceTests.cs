@@ -4,7 +4,7 @@ using FinanceTracker.Application;
 
 namespace TransactionServiceTests;
 
-public class TransactionServiceMethodsTests
+public class TransactionServiceSetupTests
 {
     [Fact]
     public void AddTransaction_IsAddedToTransactionList()
@@ -37,18 +37,78 @@ public class TransactionServiceMethodsTests
         Assert.Equal(transactions.Count, listAfter.Count);
         Assert.False(listAfter.Except(transactions).Any()); // i.e. no elements in a that aren't in b
     }
-
-    // [Fact]
-    // public void GetAllIncomes_ReturnsAllIncomeTransactions()
-    // {
-    //     TransactionService service = new TransactionService();
-    //     IReadOnlyList<Transaction> expected = service.GetTransactions()
-    //         .Where(t => t.Type == TransactionType.Expense)
-    //         .ToList().AsReadOnly();
-    //     IReadOnlyList<Transaction> actual = service.GetAllIncomes();
-    //     // Assert exactly 1 (income) transaction contained
-    //     Assert.Single(expected);
-    //     Assert.Equal(expected, actual);
-    // }
 }
-// Assert.Throws<ArgumentException>(() => TransactionTypeMethods.FromString("kitten"));
+
+public class TransactionServiceAccessTests {
+    [Fact]
+    public void GetAllIncomes_ReturnsAllIncomeTransactions()
+    {
+        TransactionService service = new TransactionService();
+        service.AddAllTransactions([
+            new Transaction(1.0, TransactionType.Income, "", ""),
+            new Transaction(2.0, TransactionType.Income, "", ""),
+            new Transaction(3.0, TransactionType.Income, "", "")
+        ]);
+        IReadOnlyList<Transaction> expected = service.GetTransactions()
+            .Where(t => t.Type == TransactionType.Income)
+            .ToList().AsReadOnly();
+        IReadOnlyList<Transaction> actual = service.GetAllIncomes();
+        // Assert exactly 1 (income) transaction contained
+        Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public void GetTotalIncome_ReturnsSumOfIncomeTransaction()
+    {
+        TransactionService service = new TransactionService();
+        service.AddAllTransactions([
+            new Transaction(1.0, TransactionType.Income, "", ""),
+            new Transaction(2.0, TransactionType.Income, "", ""),
+            new Transaction(3.0, TransactionType.Income, "", "")
+        ]);
+        Assert.Equal(6, service.GetTotalIncome());
+    }
+
+    [Fact]
+    public void GetAllExpenses_ReturnsAllExpenseTransactions()
+    {
+        TransactionService service = new TransactionService();
+        service.AddAllTransactions([
+            new Transaction(1.0, TransactionType.Expense, "", ""),
+            new Transaction(2.0, TransactionType.Expense, "", ""),
+            new Transaction(3.0, TransactionType.Expense, "", "")
+        ]);
+        IReadOnlyList<Transaction> expected = service.GetTransactions()
+            .Where(t => t.Type == TransactionType.Expense)
+            .ToList().AsReadOnly();
+        IReadOnlyList<Transaction> actual = service.GetAllExpenses();
+        // Assert exactly 1 (income) transaction contained
+        Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public void GetTotalExpenses_ReturnsSumOfExpenseTransaction()
+    {
+        TransactionService service = new TransactionService();
+        service.AddAllTransactions([
+            new Transaction(1.0, TransactionType.Expense, "", ""),
+            new Transaction(2.0, TransactionType.Expense, "", ""),
+            new Transaction(3.0, TransactionType.Expense, "", "")
+        ]);
+        Assert.Equal(6, service.GetTotalExpenses());
+    }
+
+    [Fact]
+    public void GetBalance_ReturnsBalance()
+    {
+        TransactionService service = new TransactionService();
+        service.AddAllTransactions([
+            new Transaction(10.0, TransactionType.Income, "", ""),
+            new Transaction(5.0, TransactionType.Expense, "", ""),
+        ]);
+        Assert.Equal(5, service.GetBalance());
+
+        service.AddTransaction(new Transaction(3.0, TransactionType.Expense, "", ""));
+        Assert.Equal(2, service.GetBalance());
+    }
+}
