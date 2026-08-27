@@ -37,6 +37,7 @@ while (running)
                 {
                     Transaction transaction = CLIMethods.BuildTransaction();
                     service.AddTransaction(transaction);
+                    runningBuildTransaction = false;
                 } catch (Exception e)
                 {
                     CLIMethods.PrintError($"[ERROR] {e.Message}\n");
