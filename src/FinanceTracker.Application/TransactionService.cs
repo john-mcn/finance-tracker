@@ -49,19 +49,19 @@ public class TransactionService
     //NOTE Ignores time component
     public IReadOnlyList<Transaction> GetByOnDate(DateTime date)
     {
-        return _transactions.Where((t) => t.CreatedAt.CompareTo(date.Date) == 0)
+        return _transactions.Where((t) => t.CreatedAt.Date.CompareTo(date.Date) == 0)
             .ToList().AsReadOnly();
     }
 
     public IReadOnlyList<Transaction> GetByBeforeDate(DateTime date)
     {
-        return _transactions.Where((t) => t.CreatedAt.CompareTo(date.Date) == -1)
+        return _transactions.Where((t) => t.CreatedAt.Date.CompareTo(date.Date) == -1)
             .ToList().AsReadOnly();
     }
 
     public IReadOnlyList<Transaction> GetByAfterDate(DateTime date)
     {
-        return _transactions.Where((t) => t.CreatedAt.CompareTo(date.Date) == 1)
+        return _transactions.Where((t) => t.CreatedAt.Date.CompareTo(date.Date) == 1)
             .ToList().AsReadOnly();
     }
 
