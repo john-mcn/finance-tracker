@@ -12,7 +12,8 @@ var running = true;
 service.AddTransaction(new Transaction(2.50, TransactionType.Expense, "Groceries", ""));
 service.AddTransaction(new Transaction(220M, TransactionType.Income, "", "freelance"));
 service.AddTransaction(new Transaction(11.30, TransactionType.Expense, "Groceries", "weekly shop"));
-service.AddTransaction(new Transaction(6M, TransactionType.Income, "", ""));
+service.AddTransaction(new Transaction(12M, TransactionType.Income, "Friends", "money payed back"));
+service.AddTransaction(new Transaction(50.25, TransactionType.Income, "Other", "shopping for appliances"));
 
 while (running)
 {
@@ -81,7 +82,8 @@ static class CLIMethods
 1. All
 2. All Incomes
 3. All Expenses
-4. By Category";
+4. By Category
+5. Description contains";
         var choice = ChooseOption(optionsStr);
         IEnumerable<Transaction> transactions = [];
         switch (choice)
@@ -102,6 +104,11 @@ static class CLIMethods
                 Console.Write("Enter category: ");
                 var category = Console.ReadLine() ?? "";
                 transactions = service.GetAllByCategory(category);
+                break;
+            case "5":
+                Console.Write("Enter substring: ");
+                var substring = Console.ReadLine() ?? "";
+                transactions = service.GetByDescriptionIncludes(substring);
                 break;
             default:
                 PrintError($"Invalid choice: {choice}");

@@ -40,6 +40,12 @@ public class TransactionService
             .ToList().AsReadOnly();
     }
 
+    public IReadOnlyList<Transaction> GetByDescriptionIncludes(string substring)
+    {
+        return _transactions.Where((t) => t.Description.Contains(substring))
+            .ToList().AsReadOnly();
+    }
+
     public decimal GetTotalIncome() { return GetAllIncomes().Sum(t => t.Amount); }
     public decimal GetTotalExpenses() { return GetAllExpenses().Sum(t => t.Amount); }
     public decimal GetBalance() { return GetTotalIncome() - GetTotalExpenses(); }

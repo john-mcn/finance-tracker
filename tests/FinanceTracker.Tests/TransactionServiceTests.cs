@@ -130,4 +130,23 @@ public class TransactionServiceAccessTests {
         Assert.False(transactions.Except(categoryTransactions).Any()); // i.e. no elements in a that aren't in b
         Assert.Equal(len, transactions.Where(t => t.Category == category).ToList().Count);
     }
+
+    [Fact]
+    public void GetByDescriptionContains_ReturnsAllMatchingTransactions()
+    {
+        var substring = "cook";
+        TransactionService service = new TransactionService();
+        List<Transaction> descTransactions = [
+            new Transaction(1M, TransactionType.Expense, "", "cooking supplies"),
+            new Transaction(2M, TransactionType.Income, "", "kitchenware, cooking, etc.")
+        ];
+        var len = descTransactions.Count;
+        descTransactions.Add(new Transaction(3M, TransactionType.Income, "", ""));
+        service.AddAllTransactions(descTransactions);
+
+        IReadOnlyList<Transaction> transactions = service.GetByDescriptionIncludes(substring);
+        Assert.Equal(len, transactions.Count);
+        Assert.False(transactions.Except(descTransactions).Any()); // i.e. no elements in a that aren't in b
+        Assert.Equal(len, transactions.Where(t => t.Description.Contains(substring)).ToList().Count);
+    }
 }
