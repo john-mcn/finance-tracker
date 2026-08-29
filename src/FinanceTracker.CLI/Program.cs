@@ -31,10 +31,11 @@ static class CLIMethods
             Console.WriteLine();
             var optionsStr = @"========== Finance Tracker ==========
 0. Exit
-1. View transactions
-2. Add transaction
-3. View balance
-4. View categories";
+1. View transaction
+2. View transactions
+3. Add transaction
+4. View balance
+5. View categories";
             try {
                 var choice = ChooseOption(optionsStr);
                 switch (choice)
@@ -44,16 +45,19 @@ static class CLIMethods
                         // running = false;
                         return;
                     case "1":
-                        HandleViewTransactions(service);
+                        HandleViewTransaction(service);
                         break;
                     case "2":
-                        CreateTransaction(service);
+                        HandleViewTransactions(service);
                         break;
                     case "3":
+                        CreateTransaction(service);
+                        break;
+                    case "4":
                         PrintNotice(">> Loading balance\n");
                         ViewBalance(service.GetBalance());
                         break;
-                    case "4":
+                    case "5":
                         ViewCategories(service);
                         break;
                     default:
@@ -95,6 +99,42 @@ static class CLIMethods
     {
         var sign = (balance < 0) ? "-" : "";
         Console.WriteLine($"Balance: {sign}£{balance:F2}");
+    }
+
+    public static void HandleViewTransaction(TransactionService service)
+    {
+        var optionsStr = @"Select transactions by:
+0. Back
+1. ID";
+        var choice = ChooseOption(optionsStr);
+        Transaction? transaction = null;
+        var noticeStr = ">> No output\n";
+        switch (choice)
+        {
+            case "0":
+            case "":
+                return;
+            case "1":
+                Console.Write("Enter numerical ID: ");
+                var idInpt = Console.ReadLine();
+                long id = Convert.ToInt64(idInpt);
+                transaction = service.GetById(id);
+                noticeStr = $">> Found transaction with ID {id}\n";
+                break;
+            default:
+                PrintError($"[ERROR] Invalid choice: {choice}\n");
+                break;
+        }
+        
+        if (transaction == null) {
+            PrintWarning("No transaction found\n");
+            return;
+        }
+        PrintNotice(noticeStr);
+        Console.Write("Display as pretty? (y/n)");
+        var inpt = Console.ReadLine() ?? "";
+        var pretty = inpt.Contains('y');
+        ShowTransaction(transaction, pretty: pretty);
     }
 
     public static void HandleViewTransactions(TransactionService service)
@@ -159,6 +199,17 @@ static class CLIMethods
             return;
         }
         ShowTransactions(transactions, pretty: pretty, newLine: newLine);
+    }
+
+    public static void ShowTransaction(Transaction transaction, bool pretty = false)
+    {
+        if (pretty)
+        {
+            Console.WriteLine(transaction.ToStringPretty());
+        } else
+        {
+            Console.WriteLine(transaction);
+        }
     }
 
     public static void ShowTransactions(IEnumerable<Transaction> transactions, bool pretty = false, bool newLine = false)

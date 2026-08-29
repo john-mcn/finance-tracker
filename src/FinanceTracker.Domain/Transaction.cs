@@ -83,7 +83,7 @@ public class Transaction
     public string ToStringPretty()
     {
         var sign = (Type == TransactionType.Expense) ? "-" : "";
-        return $"[{sign}£{Amount:F2} ({Type}) {TransactionDate.ToString(DATETIME_PATTERN)}"
+        return $"[{Id}: {sign}£{Amount:F2} ({Type}) {TransactionDate.ToString(DATETIME_PATTERN)}"
             + ((Category.Length > 0 || Description.Length > 0) ? " - " : "")
             + ((Category.Length > 0) ? $"\"{Category}\"" : "")
                 + ((Category.Length > 0 && Description.Length > 0) ? ", " : "") 

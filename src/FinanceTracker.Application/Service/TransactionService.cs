@@ -10,17 +10,22 @@ public class TransactionService
 
     public bool HasAny() { return _repository.HasAny(); }
 
-    public void AddTransaction(Transaction transaction) { _repository.Add(transaction); }
-    
-    public void AddAllTransactions(IEnumerable<Transaction> transactions)
+    public Transaction? GetById(long id)
     {
-        _repository.AddAll(transactions);    
+        return _repository.GetById(id);
     }
 
     // ToList to create snapshot instead of reference to same list
     public IReadOnlyList<Transaction> GetTransactions()
     {
         return _repository.GetAll().ToList().AsReadOnly();
+    }
+
+    public void AddTransaction(Transaction transaction) { _repository.Add(transaction); }
+    
+    public void AddAllTransactions(IEnumerable<Transaction> transactions)
+    {
+        _repository.AddAll(transactions);    
     }
 
     public IReadOnlyList<Transaction> GetAllIncomes()

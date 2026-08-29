@@ -74,10 +74,10 @@ public class TransactionGetterSetterTests
         var tNoDesc = new Transaction(1M, TransactionType.Income, "B", "");
         var tNoCat = new Transaction(2M, TransactionType.Income, "", "c");
         var tNeither = new Transaction(3M, TransactionType.Income, "", "");
-        Assert.Equal($"[£0.00 (Income) {dateTimeFormatted} - \"A\", \"a\"]", tBoth.ToStringPretty());
-        Assert.Equal($"[£1.00 (Income) {dateTimeFormatted} - \"B\"]", tNoDesc.ToStringPretty());
-        Assert.Equal($"[£2.00 (Income) {dateTimeFormatted} - \"c\"]", tNoCat.ToStringPretty());
-        Assert.Equal($"[£3.00 (Income) {dateTimeFormatted}]", tNeither.ToStringPretty());
+        Assert.Equal($"[{tBoth.Id}: £0.00 (Income) {dateTimeFormatted} - \"A\", \"a\"]", tBoth.ToStringPretty());
+        Assert.Equal($"[{tNoDesc.Id}: £1.00 (Income) {dateTimeFormatted} - \"B\"]", tNoDesc.ToStringPretty());
+        Assert.Equal($"[{tNoCat.Id}: £2.00 (Income) {dateTimeFormatted} - \"c\"]", tNoCat.ToStringPretty());
+        Assert.Equal($"[{tNeither.Id}: £3.00 (Income) {dateTimeFormatted}]", tNeither.ToStringPretty());
     }
 }
 
