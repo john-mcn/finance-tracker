@@ -21,8 +21,7 @@ while (running)
 0. Exit
 1. View transactions
 2. Add transaction
-3. View balance
-4. View transactions by category"
+3. View balance"
     );
     // Console.WriteLine();
     var choice = Console.ReadLine();
@@ -34,18 +33,13 @@ while (running)
             // running = false;
             return;
         case "1":
-            CLIMethods.ViewTransactions(service.GetTransactions());
+            CLIMethods.HandleViewTransactions(service);
             break;
         case "2":
             CLIMethods.CreateTransaction(service);
             break;
         case "3":
             CLIMethods.ViewBalance(service.GetBalance());
-            break;
-        case "4":
-            Console.Write("Enter category: ");
-            var category = Console.ReadLine() ?? throw new ArgumentException("Category cannot be null");
-            CLIMethods.ViewTransactions(service.GetAllByCategory(category));
             break;
         default:
             CLIMethods.PrintWarning($"Invalid option \"{choice}\"");
@@ -75,12 +69,53 @@ static class CLIMethods
         Console.WriteLine($"Balance: {sign}£{balance:F2}");
     }
 
-    public static void ViewTransactions(IEnumerable<Transaction> transactions)
+    public static void HandleViewTransactions(TransactionService service)
     {
+        // Handle which transactions to view
+        Console.WriteLine(@"Select which transactions to view:
+0. Back
+1. All
+2. All Incomes
+3. All Expenses
+4. By Category"
+        );
+        var choice = Console.ReadLine() ?? "";
+        IEnumerable<Transaction> transactions = [];
+        switch (choice)
+        {
+            case "0":
+            case "":
+                return;
+            case "1":
+                transactions = service.GetTransactions();
+                break;
+            case "2":
+                transactions = service.GetAllIncomes();
+                break;
+            case "3":
+                transactions = service.GetAllExpenses();
+                break;
+            case "4":
+                Console.Write("Enter category: ");
+                var category = Console.ReadLine() ?? "";
+                transactions = service.GetAllByCategory(category);
+                break;
+            default:
+                PrintError($"Invalid choice: {choice}");
+                break;
+        }
+        
+        // Handle how to display transactions
         Console.Write("Add optional combination of modifiers ('p' = pretty, 'n' = newline): ");
         var modifiers = Console.ReadLine() ?? "";
         var pretty = modifiers.Contains('p') || modifiers.Contains("pretty");
         var newLine = modifiers.Contains('n') || modifiers.Contains("newline");
+
+        if (!transactions.Any())
+        {
+            PrintWarning("No transactions found\n");
+            return;
+        }
         ShowTransactions(transactions, pretty: pretty, newLine: newLine);
     }
 
