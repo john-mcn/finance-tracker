@@ -66,6 +66,16 @@ public class Transaction
     {
         return $"Transaction{{amount:{_amount}, type:{Type}, category:{_category}, description:{_description}}}";
     }
+    public string ToStringPretty()
+    {
+        var sign = (Type == TransactionType.Expense) ? "-" : "";
+        return $"[{sign}£{_amount:F2} ({Type})"
+            + ((Category.Length > 0 || Description.Length > 0) ? " - " : "")
+            + ((Category.Length > 0) ? $"\"{_category}\"" : "")
+                + ((Category.Length > 0 && Description.Length > 0) ? "," : "") 
+            + ((Description.Length > 0) ? $" \"{_description}\"" : "")
+            + "]";
+    }
 
     public override bool Equals(object? obj)
     {

@@ -111,4 +111,23 @@ public class TransactionServiceAccessTests {
         service.AddTransaction(new Transaction(3.0, TransactionType.Expense, "", ""));
         Assert.Equal(2, service.GetBalance());
     }
+
+    [Fact]
+    public void GetAllByCategory_ReturnsAllMatchingTransactions()
+    {
+        var category = "Food";
+        TransactionService service = new TransactionService();
+        List<Transaction> categoryTransactions = [
+            new Transaction(1M, TransactionType.Income, category, ""),
+            new Transaction(3M, TransactionType.Income, category, "")
+        ];
+        var len = categoryTransactions.Count;
+        categoryTransactions.Add(new Transaction(2M, TransactionType.Income, "", ""));
+        service.AddAllTransactions(categoryTransactions);
+
+        IReadOnlyList<Transaction> transactions = service.GetAllByCategory(category);
+        Assert.Equal(len, transactions.Count);
+        Assert.False(transactions.Except(categoryTransactions).Any()); // i.e. no elements in a that aren't in b
+        Assert.Equal(len, transactions.Where(t => t.Category == category).ToList().Count);
+    }
 }

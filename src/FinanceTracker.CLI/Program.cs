@@ -9,25 +9,32 @@ var service = new TransactionService();
 var running = true;
 
 // Set up example transaction service
-service.AddTransaction(new Transaction((decimal) 2.50, TransactionType.Expense, "Groceries", ""));
-service.AddTransaction(new Transaction(22.0, TransactionType.Income, "Comission", ""));
+service.AddTransaction(new Transaction(2.50, TransactionType.Expense, "Groceries", ""));
+service.AddTransaction(new Transaction(220M, TransactionType.Income, "", "freelance"));
+service.AddTransaction(new Transaction(11.30, TransactionType.Expense, "Groceries", "weekly shop"));
+service.AddTransaction(new Transaction(6M, TransactionType.Income, "", ""));
 
 while (running)
 {
     Console.WriteLine();
     Console.WriteLine(@"========== Finance Tracker ==========
+0. Exit
 1. View transactions
 2. Add transaction
 3. View balance
-4. Exit"
+4. View transactions by category"
     );
     // Console.WriteLine();
     var choice = Console.ReadLine();
 
     switch (choice)
     {
+        case "0":
+        case "":
+            // running = false;
+            return;
         case "1":
-            Console.WriteLine(string.Join(", ", service.GetTransactions()));
+            CLIMethods.ViewTransactions(service.GetTransactions(), pretty: true);
             break;
         case "2":
             var runningBuildTransaction = true;
@@ -45,19 +52,20 @@ while (running)
                     var response = Console.ReadLine() ?? "exit";
                     if (response.Equals("exit") || response.Equals(""))
                     {
-                        runningBuildTransaction = false;
+                        // runningBuildTransaction = false;
                         break;
                     }
                 }
             }
             break;
         case "3":
-            Console.WriteLine($"Balance: £{service.GetBalance():F2}");
+            CLIMethods.ViewBalance(service.GetBalance());
             break;
         case "4":
-        case "":
-            // running = false;
-            return;
+            Console.Write("Enter category: ");
+            var category = Console.ReadLine() ?? throw new ArgumentException("Category cannot be null");
+            CLIMethods.ViewTransactions(service.GetAllByCategory(category), pretty: true);
+            break;
         default:
             Console.WriteLine($"Invalid option \"{choice}\"");
             break;
@@ -71,6 +79,28 @@ static class CLIMethods
         Console.ForegroundColor = ConsoleColor.Red;
         Console.Write(str);
         Console.ResetColor();
+    }
+
+    public static void ViewBalance (decimal balance)
+    {
+        var sign = (balance < 0) ? "-" : "";
+        Console.WriteLine($"Balance: {sign}£{balance:F2}");
+    }
+
+    public static void ViewTransactions(IEnumerable<Transaction> transactions, bool pretty = false, bool newLine = false)
+    {
+        IEnumerable<string> transactionsStr = transactions.Select((t) => t.ToString());
+        if (pretty)
+        {
+            transactionsStr = transactions.Select((t) => t.ToStringPretty());
+        }
+        if (newLine)
+        {
+            Console.WriteLine(string.Join("\n", transactionsStr));
+        } else
+        {
+            Console.WriteLine(string.Join(", ", transactionsStr));
+        }
     }
 
     public static Transaction BuildTransaction()

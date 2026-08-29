@@ -33,6 +33,13 @@ public class TransactionService
             .ToList().AsReadOnly();
     }
 
+    public IReadOnlyList<Transaction> GetAllByCategory(string category)
+    {
+        return _transactions
+            .Where(t => t.Category.Trim().ToLower() == category.Trim().ToLower())
+            .ToList().AsReadOnly();
+    }
+
     public decimal GetTotalIncome() { return GetAllIncomes().Sum(t => t.Amount); }
     public decimal GetTotalExpenses() { return GetAllExpenses().Sum(t => t.Amount); }
     public decimal GetBalance() { return GetTotalIncome() - GetTotalExpenses(); }

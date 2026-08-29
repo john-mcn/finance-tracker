@@ -61,11 +61,11 @@ public class TransactionConstructorTests
     public void CreateTransaction_ValidInputs_SetsCorrectly()
     {
         Transaction expected = new Transaction();
-        expected.Amount = (decimal) 2.50;
+        expected.Amount = 2.50M;
         expected.Type = TransactionType.Income;
         expected.Category = "Category";
         expected.Description = "Description";
-        Transaction actual = new((decimal) 2.50, TransactionType.Income, "Category", "Description");
+        Transaction actual = new(2.50, TransactionType.Income, "Category", "Description");
         Assert.Equal(expected, actual);
     }
 }
