@@ -116,27 +116,27 @@ static class CLIMethods
                 return;
             case "1":
                 transactions = service.GetTransactions();
-                PrintNotice($">> Loading all transactions\n");
+                PrintNotice($">> Found {transactions.Count()} transactions\n");
                 break;
             case "2":
                 transactions = service.GetAllIncomes();
-                PrintNotice($">> Loading transactions of type Income\n");
+                PrintNotice($">> Found {transactions.Count()} transactions of type Income\n");
                 break;
             case "3":
-                PrintNotice($">> Loading transactions of type Expense\n");
+                PrintNotice($">> Found {transactions.Count()} transactions of type Expense\n");
                 transactions = service.GetAllExpenses();
                 break;
             case "4":
                 Console.Write("Enter category: ");
                 var category = Console.ReadLine() ?? "";
-                PrintNotice($">> Loading transactions with category '{category}'\n");
                 transactions = service.GetByCategory(category);
+                PrintNotice($">> Found {transactions.Count()} transactions with category '{category}'\n");
                 break;
             case "5":
                 Console.Write("Enter substring: ");
                 var substring = Console.ReadLine() ?? "";
-                PrintNotice($">> Loading transactions with description containing '{substring}'\n");
                 transactions = service.GetByDescriptionIncludes(substring);
+                PrintNotice($">> Found {transactions.Count()} transactions with description containing '{substring}'\n");
                 break;
             case "6":
                 transactions = TransactionsByDateOptions(service);
@@ -185,24 +185,29 @@ static class CLIMethods
         else { dateTime = DateTime.Parse(dateChoice); }
 
         var dateCompareChoice = ChooseOption("Before (1), On (2), After (3): ");
+        IEnumerable<Transaction> transactions = [];
         switch (dateCompareChoice)
         {
             case "":
             case "0":
-                return [];
+                break;
             case "1":
-                PrintNotice($">> Loading transactions BEFORE {dateTime.ToString("dd-MM-yyyy")}\n");
-                return service.GetByBeforeDate(dateTime);
+                transactions = service.GetByBeforeDate(dateTime);
+                PrintNotice($">> Found {transactions.Count()} transactions BEFORE {dateTime.ToString("dd-MM-yyyy")}\n");
+                break;
             case "2":
-                PrintNotice($">> Loading transactions ON {dateTime.ToString("dd-MM-yyyy")}\n");
-                return service.GetByOnDate(dateTime);
+                transactions = service.GetByOnDate(dateTime);
+                PrintNotice($">> Found {transactions.Count()} transactions ON {dateTime.ToString("dd-MM-yyyy")}\n");
+                break;
             case "3":
-                PrintNotice($">> Loading transactions AFTER {dateTime.ToString("dd-MM-yyyy")}");
-                return service.GetByAfterDate(dateTime);
+                transactions = service.GetByAfterDate(dateTime);
+                PrintNotice($">> Found {transactions.Count()} transactions AFTER {dateTime.ToString("dd-MM-yyyy")}");
+                break;
             default:
                 PrintError($"[ERROR] Invalid choice: {dateCompareChoice}");
-                return [];
+                break;
         }
+        return transactions;
     }
 
     public static void CreateTransaction(TransactionService service)
@@ -245,8 +250,8 @@ static class CLIMethods
 
     public static void ViewCategories(TransactionService service)
     {
-        PrintNotice(">> Loading categories and their occurences\n");
         List<string> categories = service.GetCategories();
+        PrintNotice($">> Found {categories.Count}\n");
         Console.WriteLine(string.Join(", ", categories
             .Select(c => $"{c} ({service.GetByCategory(c).Count})")));
     }
