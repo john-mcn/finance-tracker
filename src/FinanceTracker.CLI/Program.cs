@@ -17,15 +17,13 @@ service.AddTransaction(new Transaction(6M, TransactionType.Income, "", ""));
 while (running)
 {
     Console.WriteLine();
-    Console.WriteLine(@"========== Finance Tracker ==========
+    var optionsStr = @"========== Finance Tracker ==========
 0. Exit
 1. View transactions
 2. Add transaction
-3. View balance"
-    );
+3. View balance";
     // Console.WriteLine();
-    var choice = Console.ReadLine();
-
+    var choice = CLIMethods.ChooseOption(optionsStr);
     switch (choice)
     {
         case "0":
@@ -63,6 +61,12 @@ static class CLIMethods
         Console.ResetColor();
     }
 
+    public static string ChooseOption(string options)
+    {
+        Console.WriteLine(options);
+        return (Console.ReadLine() ?? "").Trim();
+    }
+
     public static void ViewBalance (decimal balance)
     {
         var sign = (balance < 0) ? "-" : "";
@@ -72,14 +76,13 @@ static class CLIMethods
     public static void HandleViewTransactions(TransactionService service)
     {
         // Handle which transactions to view
-        Console.WriteLine(@"Select which transactions to view:
+        var optionsStr = @"Select which transactions to view:
 0. Back
 1. All
 2. All Incomes
 3. All Expenses
-4. By Category"
-        );
-        var choice = Console.ReadLine() ?? "";
+4. By Category";
+        var choice = ChooseOption(optionsStr);
         IEnumerable<Transaction> transactions = [];
         switch (choice)
         {
