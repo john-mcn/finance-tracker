@@ -33,7 +33,7 @@ public class TransactionService
             .ToList().AsReadOnly();
     }
 
-    public IReadOnlyList<Transaction> GetAllByCategory(string category)
+    public IReadOnlyList<Transaction> GetByCategory(string category)
     {
         return _transactions
             .Where(t => t.Category.Trim().ToLower() == category.Trim().ToLower())
@@ -68,4 +68,12 @@ public class TransactionService
     public decimal GetTotalIncome() { return GetAllIncomes().Sum(t => t.Amount); }
     public decimal GetTotalExpenses() { return GetAllExpenses().Sum(t => t.Amount); }
     public decimal GetBalance() { return GetTotalIncome() - GetTotalExpenses(); }
+
+    // Get *distinct* categories, ignoring case
+    public List<string> GetCategories()
+    {
+        return _transactions.Select(t => t.Category.Trim().ToLower())
+            .Distinct().Where(c => c.Length > 0).Select(c => char.ToUpper(c[0]) + c[1..])
+            .ToList();
+    }
 }

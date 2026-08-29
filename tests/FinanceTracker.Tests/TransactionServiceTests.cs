@@ -113,7 +113,7 @@ public class TransactionServiceAccessTests {
     }
 
     [Fact]
-    public void GetAllByCategory_ReturnsAllMatchingTransactions()
+    public void GetByCategory_ReturnsAllMatchingTransactions()
     {
         var category = "Food";
         TransactionService service = new TransactionService();
@@ -125,7 +125,7 @@ public class TransactionServiceAccessTests {
         categoryTransactions.Add(new Transaction(2M, TransactionType.Income, "", ""));
         service.AddAllTransactions(categoryTransactions);
 
-        IReadOnlyList<Transaction> transactions = service.GetAllByCategory(category);
+        IReadOnlyList<Transaction> transactions = service.GetByCategory(category);
         Assert.Equal(len, transactions.Count);
         Assert.False(transactions.Except(categoryTransactions).Any()); // i.e. no elements in a that aren't in b
         Assert.Equal(len, transactions.Where(t => t.Category == category).ToList().Count);
@@ -201,5 +201,21 @@ public class TransactionServiceAccessTests {
 
         Assert.Equal(transactionsLater.Count, transactionList.Count);
         Assert.False(transactionList.Except(transactionsLater).Any());
+    }
+
+    [Fact]
+    public void GetCategories_ReturnsAllDistinctCategories()
+    {
+        TransactionService service = new();
+        List<string> categories = ["one", "One", " two", "one", "three", " FOUR ", "tHree"];
+        List<string> distinctCategories = ["One", "Two", "Three", "Four"];
+        foreach (string category in categories)
+        {
+            service.AddTransaction(new Transaction(1M, TransactionType.Income, category, ""));
+        }
+        IEnumerable<string> categoryList = service.GetCategories();
+
+        Assert.Equal(distinctCategories.Count, categoryList.Count());
+        Assert.False(categoryList.Except(distinctCategories ).Any());
     }
 }

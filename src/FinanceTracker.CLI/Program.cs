@@ -32,7 +32,8 @@ static class CLIMethods
 0. Exit
 1. View transactions
 2. Add transaction
-3. View balance";
+3. View balance
+4. View categories";
             try {
                 var choice = ChooseOption(optionsStr);
                 switch (choice)
@@ -48,7 +49,11 @@ static class CLIMethods
                         CreateTransaction(service);
                         break;
                     case "3":
+                        PrintNotice(">> Loading balance\n");
                         ViewBalance(service.GetBalance());
+                        break;
+                    case "4":
+                        ViewCategories(service);
                         break;
                     default:
                         PrintWarning($"Invalid option \"{choice}\"");
@@ -125,7 +130,7 @@ static class CLIMethods
                 Console.Write("Enter category: ");
                 var category = Console.ReadLine() ?? "";
                 PrintNotice($">> Loading transactions with category '{category}'\n");
-                transactions = service.GetAllByCategory(category);
+                transactions = service.GetByCategory(category);
                 break;
             case "5":
                 Console.Write("Enter substring: ");
@@ -236,5 +241,13 @@ static class CLIMethods
         Console.Write("Description: ");
         string description = Console.ReadLine() ?? "";
         return new Transaction(amount, type, category, description);
+    }
+
+    public static void ViewCategories(TransactionService service)
+    {
+        PrintNotice(">> Loading categories and their occurences\n");
+        List<string> categories = service.GetCategories();
+        Console.WriteLine(string.Join(", ", categories
+            .Select(c => $"{c} ({service.GetByCategory(c).Count})")));
     }
 }
