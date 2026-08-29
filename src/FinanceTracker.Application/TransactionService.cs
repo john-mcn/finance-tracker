@@ -46,6 +46,25 @@ public class TransactionService
             .ToList().AsReadOnly();
     }
 
+    //NOTE Ignores time component
+    public IReadOnlyList<Transaction> GetByOnDate(DateTime date)
+    {
+        return _transactions.Where((t) => t.CreatedAt.CompareTo(date.Date) == 0)
+            .ToList().AsReadOnly();
+    }
+
+    public IReadOnlyList<Transaction> GetByBeforeDate(DateTime date)
+    {
+        return _transactions.Where((t) => t.CreatedAt.CompareTo(date.Date) == -1)
+            .ToList().AsReadOnly();
+    }
+
+    public IReadOnlyList<Transaction> GetByAfterDate(DateTime date)
+    {
+        return _transactions.Where((t) => t.CreatedAt.CompareTo(date.Date) == 1)
+            .ToList().AsReadOnly();
+    }
+
     public decimal GetTotalIncome() { return GetAllIncomes().Sum(t => t.Amount); }
     public decimal GetTotalExpenses() { return GetAllExpenses().Sum(t => t.Amount); }
     public decimal GetBalance() { return GetTotalIncome() - GetTotalExpenses(); }

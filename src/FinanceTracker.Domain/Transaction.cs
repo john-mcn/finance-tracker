@@ -38,23 +38,31 @@ public class Transaction
             {
                 throw new ArgumentException($"Description length must not exceed {DESCRIPTION_CHAR_LIMIT}");
             }
-            else { _description = value; }
+            _description = value;
         }
     }
 
-    private readonly DateTime _dateTime;
+    public DateTime CreatedAt { get; set; }
     public const string DATETIME_PATTERN = "MM-dd-yyyy H:mm";
 
     public Transaction() {}
 
-    public Transaction(decimal amount, TransactionType type, string category, string description)
+    public Transaction(decimal amount, TransactionType type, string category, string description, DateTime createdAt)
     {
         Amount = amount;
         Category = category;
         Description = description;
         Type = type;
-        _dateTime = DateTime.Now;
+        if (createdAt.CompareTo(DateTime.Now) == 1)
+        {
+            throw new ArgumentException("Creation date cannot be after now");
+        }
+        CreatedAt = createdAt;
     }
+
+    public Transaction(decimal amount, TransactionType type, string category, string description)
+        : this(amount, type, category, description, DateTime.Now)
+    {}
 
     public Transaction(double amount, TransactionType type, string category, string description)
         : this((decimal)amount, type, category, description)
@@ -68,12 +76,12 @@ public class Transaction
 
     public override string ToString()
     {
-        return $"Transaction{{amount:{_amount}, type:{Type}, dateTime:{_dateTime}, category:{_category}, description:{_description}}}";
+        return $"Transaction{{amount:{_amount}, type:{Type}, dateTime:{CreatedAt}, category:{_category}, description:{_description}}}";
     }
     public string ToStringPretty()
     {
         var sign = (Type == TransactionType.Expense) ? "-" : "";
-        return $"[{sign}£{Amount:F2} ({Type}) {_dateTime.ToString(DATETIME_PATTERN)}"
+        return $"[{sign}£{Amount:F2} ({Type}) {CreatedAt.ToString(DATETIME_PATTERN)}"
             + ((Category.Length > 0 || Description.Length > 0) ? " - " : "")
             + ((Category.Length > 0) ? $"\"{Category}\"" : "")
                 + ((Category.Length > 0 && Description.Length > 0) ? ", " : "") 

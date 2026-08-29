@@ -149,4 +149,35 @@ public class TransactionServiceAccessTests {
         Assert.False(transactions.Except(descTransactions).Any()); // i.e. no elements in a that aren't in b
         Assert.Equal(len, transactions.Where(t => t.Description.Contains(substring)).ToList().Count);
     }
+
+    // [Fact]
+    // public void GetByOnDate_ReturnsCorrectly()
+    // {
+    //     var dateTime = new DateTime(2026, 08, 29, 12, 0, 0);
+    //     TransactionService service = new();
+    //     Transaction transaction = new(10M, TransactionType.Income, "", "", dateTime);
+    //     service.AddTransaction(transaction);
+    //     IReadOnlyList<Transaction> transactionList = service.GetTransactions();
+
+    //     Assert.Single(transactionList);
+    //     Assert.Equal(transaction, transactionList[0]);
+    // }
+
+    // [Fact]
+    // public void GetByBeforeDate_ReturnsCorrectly()
+    // {
+    //     var dateTime = new DateTime(2026, 08, 29, 12, 0, 0);
+    //     TransactionService service = new();
+    //     IReadOnlyList<Transaction> transactionsEarlier = [
+    //         new(1M, TransactionType.Income, "", "", dateTime.AddDays(-2)),
+    //         new(2M, TransactionType.Income, "", "", dateTime.AddDays(-1))
+    //     ];
+    //     service.AddAllTransactions(transactionsEarlier
+    //         .Append(new(1M, TransactionType.Income, "", "", dateTime))
+    //         .Append(new(2M, TransactionType.Income, "", "", dateTime)));
+    //     IReadOnlyList<Transaction> transactionList = service.GetTransactions();
+
+    //     Assert.Equal(transactionsEarlier.Count, transactionList.Count);
+    //     Assert.False(transactionList.Except(transactionsEarlier).Any());
+    // }
 }
