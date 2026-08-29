@@ -48,7 +48,7 @@ while (running)
             CLIMethods.ViewTransactions(service.GetAllByCategory(category));
             break;
         default:
-            Console.WriteLine($"Invalid option \"{choice}\"");
+            CLIMethods.PrintWarning($"Invalid option \"{choice}\"");
             break;
     }
 }
@@ -58,6 +58,13 @@ static class CLIMethods
     public static void PrintError(string str)
     {
         Console.ForegroundColor = ConsoleColor.Red;
+        Console.Write(str);
+        Console.ResetColor();
+    }
+
+    public static void PrintWarning(string str)
+    {
+        Console.ForegroundColor = ConsoleColor.DarkYellow;
         Console.Write(str);
         Console.ResetColor();
     }
