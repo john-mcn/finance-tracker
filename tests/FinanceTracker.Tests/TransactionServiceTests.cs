@@ -1,15 +1,18 @@
 using Xunit;
 using FinanceTracker.Domain;
 using FinanceTracker.Application;
+using FinanceTracker.Tests; //???
 
 namespace TransactionServiceTests;
 
+//TODO test methods like GetById - need to alter mock repo to mimic DB ID relationship
 public class TransactionServiceSetupTests
 {
     [Fact]
     public void AddTransaction_IsAddedToTransactionList()
     {
-        TransactionService service = new TransactionService();
+        var repository = new MockTransactionRepository();
+        var service = new TransactionService(repository);
         IReadOnlyList<Transaction> listBefore = service.GetTransactions();
         Transaction transaction = new Transaction();
         service.AddTransaction(transaction);
@@ -23,7 +26,8 @@ public class TransactionServiceSetupTests
     [Fact]
     public void AddAllTransactions_AddsAllTransactionsCorrectly()
     {
-        TransactionService service = new TransactionService();
+        var repository = new MockTransactionRepository();
+        var service = new TransactionService(repository);
         IReadOnlyList<Transaction> listBefore = service.GetTransactions();
         List<Transaction> transactions = [
             new Transaction(),
@@ -43,7 +47,8 @@ public class TransactionServiceAccessTests {
     [Fact]
     public void GetAllIncomes_ReturnsAllIncomeTransactions()
     {
-        TransactionService service = new TransactionService();
+        var repository = new MockTransactionRepository();
+        var service = new TransactionService(repository);
         service.AddAllTransactions([
             new Transaction(1.0, TransactionType.Income, "", ""),
             new Transaction(2.0, TransactionType.Income, "", ""),
@@ -60,7 +65,8 @@ public class TransactionServiceAccessTests {
     [Fact]
     public void GetTotalIncome_ReturnsSumOfIncomeTransaction()
     {
-        TransactionService service = new TransactionService();
+        var repository = new MockTransactionRepository();
+        var service = new TransactionService(repository);
         service.AddAllTransactions([
             new Transaction(1.0, TransactionType.Income, "", ""),
             new Transaction(2.0, TransactionType.Income, "", ""),
@@ -72,7 +78,8 @@ public class TransactionServiceAccessTests {
     [Fact]
     public void GetAllExpenses_ReturnsAllExpenseTransactions()
     {
-        TransactionService service = new TransactionService();
+        var repository = new MockTransactionRepository();
+        var service = new TransactionService(repository);
         service.AddAllTransactions([
             new Transaction(1.0, TransactionType.Expense, "", ""),
             new Transaction(2.0, TransactionType.Expense, "", ""),
@@ -89,7 +96,8 @@ public class TransactionServiceAccessTests {
     [Fact]
     public void GetTotalExpenses_ReturnsSumOfExpenseTransaction()
     {
-        TransactionService service = new TransactionService();
+        var repository = new MockTransactionRepository();
+        var service = new TransactionService(repository);
         service.AddAllTransactions([
             new Transaction(1.0, TransactionType.Expense, "", ""),
             new Transaction(2.0, TransactionType.Expense, "", ""),
@@ -101,7 +109,8 @@ public class TransactionServiceAccessTests {
     [Fact]
     public void GetBalance_ReturnsBalance()
     {
-        TransactionService service = new TransactionService();
+        var repository = new MockTransactionRepository();
+        var service = new TransactionService(repository);
         service.AddAllTransactions([
             new Transaction(10.0, TransactionType.Income, "", ""),
             new Transaction(5.0, TransactionType.Expense, "", ""),
@@ -116,7 +125,8 @@ public class TransactionServiceAccessTests {
     public void GetByCategory_ReturnsAllMatchingTransactions()
     {
         var category = "Food";
-        TransactionService service = new TransactionService();
+        var repository = new MockTransactionRepository();
+        var service = new TransactionService(repository);
         List<Transaction> categoryTransactions = [
             new Transaction(1M, TransactionType.Income, category, ""),
             new Transaction(3M, TransactionType.Income, category, "")
@@ -135,7 +145,8 @@ public class TransactionServiceAccessTests {
     public void GetByDescriptionContains_ReturnsAllMatchingTransactions()
     {
         var substring = "cook";
-        TransactionService service = new TransactionService();
+        var repository = new MockTransactionRepository();
+        var service = new TransactionService(repository);
         List<Transaction> descTransactions = [
             new Transaction(1M, TransactionType.Expense, "", "cooking supplies"),
             new Transaction(2M, TransactionType.Income, "", "kitchenware, cooking, etc.")
@@ -154,10 +165,11 @@ public class TransactionServiceAccessTests {
     public void GetByOnDate_ReturnsCorrectly()
     {
         var dateTime = new DateTime(2026, 01, 01, 1, 2, 3);
-        TransactionService service = new();
+        var repository = new MockTransactionRepository();
+        TransactionService service = new(repository);
         Transaction transaction = new(10M, TransactionType.Income, "", "", dateTime);
         Transaction transactionAfter = new(1M, TransactionType.Income, "", "");
-        transactionAfter.CreatedAt = dateTime.AddDays(2);
+        transactionAfter.TransactionDate = dateTime.AddDays(2);
         service.AddAllTransactions([transaction, transactionAfter]);
         IReadOnlyList<Transaction> transactionList = service.GetByOnDate(dateTime);
 
@@ -169,7 +181,8 @@ public class TransactionServiceAccessTests {
     public void GetByBeforeDate_ReturnsCorrectly()
     {
         var dateTime = new DateTime(2026, 01, 01, 1, 2, 3);
-        TransactionService service = new();
+        var repository = new MockTransactionRepository();
+        TransactionService service = new(repository);
         IReadOnlyList<Transaction> transactionsEarlier = [
             new(1M, TransactionType.Income, "", "", dateTime.AddDays(-2)),
             new(2M, TransactionType.Income, "", "", dateTime.AddDays(-1))
@@ -187,13 +200,14 @@ public class TransactionServiceAccessTests {
     public void GetByAfterDate_ReturnsCorrectly()
     {
         var dateTime = new DateTime(2026, 01, 01, 1, 2, 3);
-        TransactionService service = new();
+        var repository = new MockTransactionRepository();
+        TransactionService service = new(repository);
         IReadOnlyList<Transaction> transactionsLater = [
             new(1M, TransactionType.Income, "", ""),
             new(2M, TransactionType.Income, "", "")
         ];
-        transactionsLater[0].CreatedAt = dateTime.AddDays(2);
-        transactionsLater[1].CreatedAt = dateTime.AddDays(1);
+        transactionsLater[0].TransactionDate = dateTime.AddDays(2);
+        transactionsLater[1].TransactionDate = dateTime.AddDays(1);
         service.AddAllTransactions(transactionsLater
             .Append(new(1M, TransactionType.Income, "", "", dateTime))
             .Append(new(2M, TransactionType.Income, "", "", dateTime)));
@@ -206,7 +220,8 @@ public class TransactionServiceAccessTests {
     [Fact]
     public void GetCategories_ReturnsAllDistinctCategories()
     {
-        TransactionService service = new();
+        var repository = new MockTransactionRepository();
+        TransactionService service = new(repository);
         List<string> categories = ["one", "One", " two", "one", "three", " FOUR ", "tHree"];
         List<string> distinctCategories = ["One", "Two", "Three", "Four"];
         foreach (string category in categories)

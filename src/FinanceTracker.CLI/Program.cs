@@ -4,20 +4,21 @@
 using System;
 using FinanceTracker.Application;
 using FinanceTracker.Domain;
+using FinanceTracker.Infrastructure;
+using Microsoft.EntityFrameworkCore;
 
-var service = new TransactionService();
+var options = new DbContextOptionsBuilder<FinanceTrackerDbContext>()
+    .UseSqlite("Data Source=db/finance-tracker.db")
+    .Options;
+
+using var db = new FinanceTrackerDbContext(options);
+db.Database.EnsureCreated();
+
+var repository = new TransactionRepository(db);
+var service = new TransactionService(repository);
 
 // Set up example transaction service
-DateTime now = DateTime.Now;
-service.AddTransaction(new Transaction(2.50, TransactionType.Expense, "Groceries", ""));
-    service.GetTransactions()[0].CreatedAt = now.AddDays(-2);
-service.AddTransaction(new Transaction(220M, TransactionType.Income, "", "freelance"));
-    service.GetTransactions()[1].CreatedAt = now.AddDays(-1);
-service.AddTransaction(new Transaction(11.30, TransactionType.Expense, "Groceries", "weekly shop"));
-service.AddTransaction(new Transaction(12M, TransactionType.Income, "Friends", "money payed back"));
-service.AddTransaction(new Transaction(50.25, TransactionType.Income, "Other", "shopping for appliances"));
-    service.GetTransactions()[4].CreatedAt = now.AddDays(2);
-
+SeedDemoData.Seed(service);
 CLIMethods.RunCLI(service);
 
 static class CLIMethods

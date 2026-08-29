@@ -3,6 +3,9 @@ namespace FinanceTracker.Domain;
 // Transaction 'amount' can only be positive - income/expense stored in 'type'
 public class Transaction
 {
+    // Database ID
+    public long Id { get; private set; }
+
     public const int CATEGORY_CHAR_LIMIT = 10;
     public const int DESCRIPTION_CHAR_LIMIT = 30;
 
@@ -42,46 +45,45 @@ public class Transaction
         }
     }
 
-    public DateTime CreatedAt { get; set; }
+    public DateTime TransactionDate { get; set; }
     public const string DATETIME_PATTERN = "MM-dd-yyyy H:mm";
 
     public Transaction() {}
 
-    public Transaction(decimal amount, TransactionType type, string category, string description, DateTime createdAt)
+    public Transaction(
+            decimal amount, TransactionType type, string category, string description,
+            DateTime transactionDate
+    )
     {
         Amount = amount;
         Category = category;
         Description = description;
         Type = type;
-        if (createdAt.CompareTo(DateTime.Now) == 1)
+        if (transactionDate.CompareTo(DateTime.Now) == 1)
         {
             throw new ArgumentException("Creation date cannot be after now");
         }
-        CreatedAt = createdAt;
+        TransactionDate = transactionDate;
     }
 
-    public Transaction(decimal amount, TransactionType type, string category, string description)
+    public Transaction(
+            decimal amount, TransactionType type, string category, string description)
         : this(amount, type, category, description, DateTime.Now)
     {}
 
-    public Transaction(double amount, TransactionType type, string category, string description)
+    public Transaction(
+            double amount, TransactionType type, string category, string description)
         : this((decimal)amount, type, category, description)
     {}
 
-    // Make into helper?
-    // Return text up to and including character at limit index
-    static string ClipText(string inpt, int charLimit) {
-        return inpt[..Math.Min(charLimit, inpt.Length)];
-    }
-
     public override string ToString()
     {
-        return $"Transaction{{amount:{_amount}, type:{Type}, dateTime:{CreatedAt}, category:{_category}, description:{_description}}}";
+        return $"Transaction{Id}{{amount:{_amount}, type:{Type}, dateTime:{TransactionDate}, category:{_category}, description:{_description}}}";
     }
     public string ToStringPretty()
     {
         var sign = (Type == TransactionType.Expense) ? "-" : "";
-        return $"[{sign}£{Amount:F2} ({Type}) {CreatedAt.ToString(DATETIME_PATTERN)}"
+        return $"[{sign}£{Amount:F2} ({Type}) {TransactionDate.ToString(DATETIME_PATTERN)}"
             + ((Category.Length > 0 || Description.Length > 0) ? " - " : "")
             + ((Category.Length > 0) ? $"\"{Category}\"" : "")
                 + ((Category.Length > 0 && Description.Length > 0) ? ", " : "") 
