@@ -34,7 +34,7 @@ while (running)
             // running = false;
             return;
         case "1":
-            CLIMethods.ViewTransactions(service.GetTransactions(), pretty: true);
+            CLIMethods.ViewTransactions(service.GetTransactions());
             break;
         case "2":
             CLIMethods.CreateTransaction(service);
@@ -45,7 +45,7 @@ while (running)
         case "4":
             Console.Write("Enter category: ");
             var category = Console.ReadLine() ?? throw new ArgumentException("Category cannot be null");
-            CLIMethods.ViewTransactions(service.GetAllByCategory(category), pretty: true);
+            CLIMethods.ViewTransactions(service.GetAllByCategory(category));
             break;
         default:
             Console.WriteLine($"Invalid option \"{choice}\"");
@@ -68,7 +68,16 @@ static class CLIMethods
         Console.WriteLine($"Balance: {sign}£{balance:F2}");
     }
 
-    public static void ViewTransactions(IEnumerable<Transaction> transactions, bool pretty = false, bool newLine = false)
+    public static void ViewTransactions(IEnumerable<Transaction> transactions)
+    {
+        Console.Write("Add optional combination of modifiers ('p' = pretty, 'n' = newline): ");
+        var modifiers = Console.ReadLine() ?? "";
+        var pretty = modifiers.Contains('p') || modifiers.Contains("pretty");
+        var newLine = modifiers.Contains('n') || modifiers.Contains("newline");
+        ShowTransactions(transactions, pretty: pretty, newLine: newLine);
+    }
+
+    public static void ShowTransactions(IEnumerable<Transaction> transactions, bool pretty = false, bool newLine = false)
     {
         IEnumerable<string> transactionsStr = transactions.Select((t) => t.ToString());
         if (pretty)
