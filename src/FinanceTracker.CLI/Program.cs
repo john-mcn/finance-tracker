@@ -33,27 +33,28 @@ static class CLIMethods
 1. View transactions
 2. Add transaction
 3. View balance";
-            // Console.WriteLine();
-            var choice = CLIMethods.ChooseOption(optionsStr);
-            switch (choice)
-            {
-                case "0":
-                case "":
-                    // running = false;
-                    return;
-                case "1":
-                    CLIMethods.HandleViewTransactions(service);
-                    break;
-                case "2":
-                    CLIMethods.CreateTransaction(service);
-                    break;
-                case "3":
-                    CLIMethods.ViewBalance(service.GetBalance());
-                    break;
-                default:
-                    CLIMethods.PrintWarning($"Invalid option \"{choice}\"");
-                    break;
-            }
+            try {
+                var choice = ChooseOption(optionsStr);
+                switch (choice)
+                {
+                    case "0":
+                    case "":
+                        // running = false;
+                        return;
+                    case "1":
+                        HandleViewTransactions(service);
+                        break;
+                    case "2":
+                        CreateTransaction(service);
+                        break;
+                    case "3":
+                        ViewBalance(service.GetBalance());
+                        break;
+                    default:
+                        PrintWarning($"Invalid option \"{choice}\"");
+                        break;
+                }
+            } catch(Exception e) { PrintError($"[ERROR] {e.Message}\n"); }
         }
     }
 
@@ -136,7 +137,7 @@ static class CLIMethods
                 transactions = TransactionsByDateOptions(service);
                 break;
             default:
-                PrintError($"Invalid choice: {choice}");
+                PrintError($"[ERROR] Invalid choice: {choice}");
                 break;
         }
         
@@ -194,7 +195,7 @@ static class CLIMethods
                 PrintNotice($">> Loading transactions AFTER {dateTime.ToString("dd-MM-yyyy")}");
                 return service.GetByAfterDate(dateTime);
             default:
-                PrintError($"Invalid choice: {dateCompareChoice}");
+                PrintError($"[ERROR] Invalid choice: {dateCompareChoice}");
                 return [];
         }
     }
@@ -211,7 +212,7 @@ static class CLIMethods
                 runningBuildTransaction = false;
             } catch (Exception e)
             {
-                CLIMethods.PrintError($"[ERROR] {e.Message}\n");
+                PrintError($"[ERROR] {e.Message}\n");
                 Console.Write("Enter any character to try again, or 'exit' to return to main menu ");
                 var response = Console.ReadLine() ?? "exit";
                 if (response.Equals("exit") || response.Equals(""))
