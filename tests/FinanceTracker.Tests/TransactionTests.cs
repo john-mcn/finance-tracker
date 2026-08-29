@@ -52,6 +52,29 @@ public class TransactionGetterSetterTests
         Transaction transaction = new();
         Assert.Throws<ArgumentException>(() => transaction.Description = description);
     }
+
+    [Fact]
+    public void ToStringPretty_ShowsMinusSignAppropriately()
+    {
+        // Test correct presence of minus sign
+        var tIncome = new Transaction(5M, TransactionType.Income, "", "");
+        var tExpense = new Transaction(5M, TransactionType.Expense, "", "");
+        Assert.DoesNotContain("-", tIncome.ToStringPretty());
+        Assert.Contains("-", tExpense.ToStringPretty());
+    }
+    [Fact]
+    public void ToStringPretty_HasCorrectFormat()
+    {
+        // Test format based on supplied fields
+        var tBoth = new Transaction(0M, TransactionType.Income, "A", "a");
+        var tNoDesc = new Transaction(1M, TransactionType.Income, "B", "");
+        var tNoCat = new Transaction(2M, TransactionType.Income, "", "c");
+        var tNeither = new Transaction(3M, TransactionType.Income, "", "");
+        Assert.Equal("[£0.00 (Income) - \"A\", \"a\"]", tBoth.ToStringPretty());
+        Assert.Equal("[£1.00 (Income) - \"B\"]", tNoDesc.ToStringPretty());
+        Assert.Equal("[£2.00 (Income) - \"c\"]", tNoCat.ToStringPretty());
+        Assert.Equal("[£3.00 (Income)]", tNeither.ToStringPretty());
+    }
 }
 
 // Constructor uses setters tested above

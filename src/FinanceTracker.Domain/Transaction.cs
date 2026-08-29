@@ -11,7 +11,7 @@ public class Transaction
     {
         get => _amount;
         set {
-            if (value <= 0) { throw new ArgumentException($"Amount must not be less than 0: {value}"); }
+            if (value < 0) { throw new ArgumentException($"Amount must not be less than 0: {value}"); }
             else { _amount = value; }
         }
     }
@@ -72,8 +72,8 @@ public class Transaction
         return $"[{sign}£{_amount:F2} ({Type})"
             + ((Category.Length > 0 || Description.Length > 0) ? " - " : "")
             + ((Category.Length > 0) ? $"\"{_category}\"" : "")
-                + ((Category.Length > 0 && Description.Length > 0) ? "," : "") 
-            + ((Description.Length > 0) ? $" \"{_description}\"" : "")
+                + ((Category.Length > 0 && Description.Length > 0) ? ", " : "") 
+            + ((Description.Length > 0) ? $"\"{_description}\"" : "")
             + "]";
     }
 
