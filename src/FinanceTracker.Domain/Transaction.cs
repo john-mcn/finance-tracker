@@ -42,6 +42,9 @@ public class Transaction
         }
     }
 
+    private readonly DateTime _dateTime;
+    public const string DATETIME_PATTERN = "MM-dd-yyyy H:mm";
+
     public Transaction() {}
 
     public Transaction(decimal amount, TransactionType type, string category, string description)
@@ -50,6 +53,7 @@ public class Transaction
         Category = category;
         Description = description;
         Type = type;
+        _dateTime = DateTime.Now;
     }
 
     public Transaction(double amount, TransactionType type, string category, string description)
@@ -64,16 +68,16 @@ public class Transaction
 
     public override string ToString()
     {
-        return $"Transaction{{amount:{_amount}, type:{Type}, category:{_category}, description:{_description}}}";
+        return $"Transaction{{amount:{_amount}, type:{Type}, dateTime:{_dateTime}, category:{_category}, description:{_description}}}";
     }
     public string ToStringPretty()
     {
         var sign = (Type == TransactionType.Expense) ? "-" : "";
-        return $"[{sign}£{_amount:F2} ({Type})"
+        return $"[{sign}£{Amount:F2} ({Type}) {_dateTime.ToString(DATETIME_PATTERN)}"
             + ((Category.Length > 0 || Description.Length > 0) ? " - " : "")
-            + ((Category.Length > 0) ? $"\"{_category}\"" : "")
+            + ((Category.Length > 0) ? $"\"{Category}\"" : "")
                 + ((Category.Length > 0 && Description.Length > 0) ? ", " : "") 
-            + ((Description.Length > 0) ? $"\"{_description}\"" : "")
+            + ((Description.Length > 0) ? $"\"{Description}\"" : "")
             + "]";
     }
 

@@ -57,9 +57,10 @@ public class TransactionGetterSetterTests
     public void ToStringPretty_ShowsMinusSignAppropriately()
     {
         // Test correct presence of minus sign
+        string dateTimeFormatted = DateTime.Now.ToString(Transaction.DATETIME_PATTERN);
         var tIncome = new Transaction(5M, TransactionType.Income, "", "");
         var tExpense = new Transaction(5M, TransactionType.Expense, "", "");
-        Assert.DoesNotContain("-", tIncome.ToStringPretty());
+        Assert.DoesNotContain("-", tIncome.ToStringPretty().Replace(dateTimeFormatted, ""));
         Assert.Contains("-", tExpense.ToStringPretty());
     }
 
@@ -68,14 +69,15 @@ public class TransactionGetterSetterTests
     public void ToStringPretty_HasCorrectFormat()
     {
         // Test format based on supplied fields
+        string dateTimeFormatted = DateTime.Now.ToString(Transaction.DATETIME_PATTERN);
         var tBoth = new Transaction(0M, TransactionType.Income, "A", "a");
         var tNoDesc = new Transaction(1M, TransactionType.Income, "B", "");
         var tNoCat = new Transaction(2M, TransactionType.Income, "", "c");
         var tNeither = new Transaction(3M, TransactionType.Income, "", "");
-        Assert.Equal("[£0.00 (Income) - \"A\", \"a\"]", tBoth.ToStringPretty());
-        Assert.Equal("[£1.00 (Income) - \"B\"]", tNoDesc.ToStringPretty());
-        Assert.Equal("[£2.00 (Income) - \"c\"]", tNoCat.ToStringPretty());
-        Assert.Equal("[£3.00 (Income)]", tNeither.ToStringPretty());
+        Assert.Equal($"[£0.00 (Income) {dateTimeFormatted} - \"A\", \"a\"]", tBoth.ToStringPretty());
+        Assert.Equal($"[£1.00 (Income) {dateTimeFormatted} - \"B\"]", tNoDesc.ToStringPretty());
+        Assert.Equal($"[£2.00 (Income) {dateTimeFormatted} - \"c\"]", tNoCat.ToStringPretty());
+        Assert.Equal($"[£3.00 (Income) {dateTimeFormatted}]", tNeither.ToStringPretty());
     }
 }
 
