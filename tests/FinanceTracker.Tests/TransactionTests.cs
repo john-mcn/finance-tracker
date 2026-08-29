@@ -62,6 +62,8 @@ public class TransactionGetterSetterTests
         Assert.DoesNotContain("-", tIncome.ToStringPretty());
         Assert.Contains("-", tExpense.ToStringPretty());
     }
+
+    //NOTE hardcoded - if ToStringPretty changes, change test accordingly 
     [Fact]
     public void ToStringPretty_HasCorrectFormat()
     {

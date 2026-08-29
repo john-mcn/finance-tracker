@@ -37,26 +37,7 @@ while (running)
             CLIMethods.ViewTransactions(service.GetTransactions(), pretty: true);
             break;
         case "2":
-            var runningBuildTransaction = true;
-            while (runningBuildTransaction)
-            {
-                try
-                {
-                    Transaction transaction = CLIMethods.BuildTransaction();
-                    service.AddTransaction(transaction);
-                    runningBuildTransaction = false;
-                } catch (Exception e)
-                {
-                    CLIMethods.PrintError($"[ERROR] {e.Message}\n");
-                    Console.Write("Enter any character to try again, or 'exit' to return to main menu ");
-                    var response = Console.ReadLine() ?? "exit";
-                    if (response.Equals("exit") || response.Equals(""))
-                    {
-                        // runningBuildTransaction = false;
-                        break;
-                    }
-                }
-            }
+            CLIMethods.CreateTransaction(service);
             break;
         case "3":
             CLIMethods.ViewBalance(service.GetBalance());
@@ -100,6 +81,30 @@ static class CLIMethods
         } else
         {
             Console.WriteLine(string.Join(", ", transactionsStr));
+        }
+    }
+
+    public static void CreateTransaction(TransactionService service)
+    {
+        var runningBuildTransaction = true;
+        while (runningBuildTransaction)
+        {
+            try
+            {
+                Transaction transaction = CLIMethods.BuildTransaction();
+                service.AddTransaction(transaction);
+                runningBuildTransaction = false;
+            } catch (Exception e)
+            {
+                CLIMethods.PrintError($"[ERROR] {e.Message}\n");
+                Console.Write("Enter any character to try again, or 'exit' to return to main menu ");
+                var response = Console.ReadLine() ?? "exit";
+                if (response.Equals("exit") || response.Equals(""))
+                {
+                    // runningBuildTransaction = false;
+                    break;
+                }
+            }
         }
     }
 
