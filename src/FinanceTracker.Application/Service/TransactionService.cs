@@ -67,14 +67,14 @@ public class TransactionService
     public IReadOnlyList<Transaction> GetByBeforeDate(DateTime date)
     {
         return _repository.GetAll()
-            .Where((t) => t.TransactionDate.Date.CompareTo(date.Date) == -1)
+            .Where((t) => t.TransactionDate.Date < date.Date)
             .ToList().AsReadOnly();
     }
 
     public IReadOnlyList<Transaction> GetByAfterDate(DateTime date)
     {
         return _repository.GetAll()
-            .Where((t) => t.TransactionDate.Date.CompareTo(date.Date) == 1)
+            .Where((t) => t.TransactionDate.Date > date.Date)
             .ToList().AsReadOnly();
     }
 
