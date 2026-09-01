@@ -83,11 +83,15 @@ public class TransactionService
     public decimal GetBalance() { return GetTotalIncome() - GetTotalExpenses(); }
 
     // Get *distinct* categories, ignoring case
+    //NOTE same logic in TransactionAnalysisData - extract into helper method?
+    //NOTE issue with empty str for category - what to do w it, ignore = lose data 
     public List<string> GetCategories()
     {
         return _repository.GetAll()
             .Select(t => t.Category.Trim().ToLower())
-            .Distinct().Where(c => c.Length > 0).Select(c => char.ToUpper(c[0]) + c[1..])
+            .Distinct()
+            // .Where(c => c.Length > 0)
+            .Select(c => c.Length > 0 ? char.ToUpper(c[0]) + c[1..] : c)
             .ToList();
     }
 }

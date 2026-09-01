@@ -19,6 +19,8 @@ var service = new TransactionService(repository);
 
 // Set up example transaction service
 SeedDemoData.Seed(service);
+
+Console.OutputEncoding = System.Text.Encoding.UTF8;
 CLIMethods.RunCLI(service);
 
 static class CLIMethods
@@ -35,7 +37,8 @@ static class CLIMethods
 2. View transactions
 3. Add transaction
 4. View balance
-5. View categories";
+5. View categories
+6. View analytics";
             try {
                 var choice = ChooseOption(optionsStr);
                 switch (choice)
@@ -59,6 +62,9 @@ static class CLIMethods
                         break;
                     case "5":
                         ViewCategories(service);
+                        break;
+                    case "6":
+                        ViewAnalytics(service.GetTransactions());
                         break;
                     default:
                         PrintWarning($"Invalid option \"{choice}\"");
@@ -303,8 +309,77 @@ static class CLIMethods
     public static void ViewCategories(TransactionService service)
     {
         List<string> categories = service.GetCategories();
-        PrintNotice($">> Found {categories.Count}\n");
+        PrintNotice($">> Found {categories.Count} categories\n");
+        if (categories.Any(c => c.Length < 1))
+        {
+            PrintWarning("At least one category is empty\n");
+        }
         Console.WriteLine(string.Join(", ", categories
-            .Select(c => $"{c} ({service.GetByCategory(c).Count})")));
+            .Select(c => $"'{c}' ({service.GetByCategory(c).Count})")));
+    }
+
+    public static void ViewAnalytics(IEnumerable<Transaction> transactions)
+    {
+        TransactionAnalysisData analysisData = new(transactions);
+        PrintNotice($">> Analysing {analysisData.TransactionCount} transactions\n");
+        var balanceSign = analysisData.TotalBalance < 0 ? "-" : "";
+
+        Console.WriteLine($"Total Balance = {balanceSign}£{Math.Abs(analysisData.TotalBalance):N2}");
+
+        // Income analysis
+        Console.WriteLine(
+            $"\nIncomes ({analysisData.Incomes.Count}, totalling £{analysisData.TotalIncome:N2})"
+        );
+        Console.WriteLine(string.Join(
+            Environment.NewLine,
+            analysisData.TotalIncomeByCategory
+                .Where(x => x.Value > 0)
+                .Select(x => $" • {$"'{x.Key}'",-12} = £{x.Value:N2}")
+        ));
+
+        // Expense analysis
+        Console.WriteLine(
+            $"\nExpenses ({analysisData.Expenses.Count}, totalling -£{analysisData.TotalExpense:N2})"
+        );
+        Console.WriteLine(string.Join(
+            Environment.NewLine,
+            analysisData.TotalExpenseByCategory
+                .Where(x => x.Value > 0)
+                .Select(x => $" • {$"'{x.Key}'",-12} = -£{x.Value:N2}")
+        ));
+
+        // Category analysis
+        Console.WriteLine($"\nCategory analysis ({analysisData.Categories.Count} categories)");
+        if (analysisData.Categories.Any(c => c.Length < 1))
+        {
+            PrintWarning("At least one category is empty\n");
+        }
+        Console.WriteLine("  Top income categories");
+        Console.WriteLine(string.Join(
+            Environment.NewLine,
+            analysisData.Top3IncomesByCategory
+                .Select(x =>
+                    $"   • {$"'{x.Key}'",-15} = £{Math.Abs(x.Value):N2}"
+                )
+        ));
+        Console.WriteLine("  Top expense categories");
+        Console.WriteLine(string.Join(
+            Environment.NewLine,
+            analysisData.Top3ExpensesByCategory
+                .Select(x =>
+                    $"   • {$"'{x.Key}'",-15} = -£{Math.Abs(x.Value):N2}"
+                )
+        ));
+
+        // Month analysis
+        Console.WriteLine("\nMonthly analysis");
+        Console.WriteLine(string.Join(
+            Environment.NewLine,
+            analysisData.MeanBalancePerMonth
+                .Select(x =>
+                    $" • {x.Key.ToString(Transaction.DATEMONTH_PATTERN),-15} = {(x.Value < 0 ? "-" : "")}£{Math.Abs(x.Value):N2}"
+                )
+        ));
+
     }
 }

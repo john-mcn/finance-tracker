@@ -7,7 +7,12 @@ public class Transaction: TransactionDefinition
     public long Id { get; private set; }
 
     public DateTime TransactionDate { get; set; }
+    // i.e. 01/09/2026 12:00
     public const string DATETIME_PATTERN = "MM-dd-yyyy H:mm";
+    // i.e. 01 September 2026
+    public const string DATE_PATTERN = "dd MMMM yyyy";
+    // i.e. September 2026
+    public const string DATEMONTH_PATTERN = "MMMM yyyy";
 
     public RecurringTransactionSrc? Recurrence { get; set; }
 
