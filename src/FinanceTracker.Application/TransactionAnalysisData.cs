@@ -84,7 +84,7 @@ public sealed class TransactionAnalysisData(IEnumerable<Transaction> transaction
     ) {
         return transactions.GroupBy(t => t.Category.Trim().ToLower())
             .ToDictionary(
-                x => x.Key,
+                x => (x.Key.Length > 0) ? char.ToUpper(x.Key[0]) + x.Key[1..] : x.Key,
                 x => (IReadOnlyList<Transaction>) x.ToList().AsReadOnly()
             );
     }
